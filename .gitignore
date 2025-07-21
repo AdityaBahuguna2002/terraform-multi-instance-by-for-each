@@ -1,0 +1,38 @@
+## `.gitignore`
+
+```gitignore
+# Terraform state files
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+terraform.tfvars.backup
+terraform.tfvars.json
+*.backup
+*.log
+
+# SSH Keys
+*.pem
+*.pub
+
+# Local override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# IDE folders
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS and package manager files
+Thumbs.db
+node_modules/
+dist/
+build/
+.env
+````
+
+---
