@@ -55,7 +55,6 @@ variable "root_block_config" {
 # }
 
 variable "ec2_instance_list" {
-
   type = list(object({
     name          = string
     ami_id        = string
@@ -88,12 +87,13 @@ module "my_vpc" {
 
 # security_group.tf ---------------------
 module "my_sg" {
-  source = "terraform-aws-modules/securit-group/aws"
+  source = "terraform-aws-modules/security-group/aws"
 
+  name        = "${var.environment}-SG"
   description = "This is SG for sample-project"
   vpc_id      = module.my_vpc.vpc_id
 
-  ingress_with_cidr_block = [
+  ingress_with_cidr_blocks = [
     {
       from_port  = 22
       to_port    = 22
@@ -136,6 +136,7 @@ resource "aws_instance" "my_server" {
   ami           = each.value.ami_id
   instance_type = each.value.instance_type
   key_name      = aws_key_pair.my_key.key_name
+  depends_on    = [module.my_vpc, module.my_sg]
 
   vpc_security_group_ids = [module.my_sg.security_group_id]
   subnet_id              = module.my_vpc.public_subnets[each.value.subnet_index]
