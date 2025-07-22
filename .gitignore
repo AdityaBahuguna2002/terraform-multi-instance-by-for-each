@@ -14,6 +14,7 @@ terraform.tfvars.json
 # SSH Keys
 *.pem
 *.pub
+*key
 
 # Local override files
 override.tf

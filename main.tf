@@ -39,6 +39,42 @@ variable "root_block_config" {
   }
 }
 
+variable "cidr_range" {
+  type    = string
+  default = "10.0.0.0/16"
+}
+variable "public_subnets" {
+  type = object({
+    public_subnet1 = string
+    public_subnet2 = string
+  })
+  default = {
+    public_subnet1 = "10.0.0.0/24"
+    public_subnet2 = "10.0.1.0/24"
+  }
+}
+
+variable "private_subnets" {
+  type    = string
+  default = "10.0.2.0/24"
+}
+
+variable "availability_zone" {
+  type    = string
+  default = "ap-south-1a"
+}
+
+variable "key_name" {
+  type    = string
+  default = "my-secret-key"
+}
+
+variable "created_by_user" {
+  type    = string
+  default = "Aditya Bahuguna"
+
+}
+
 # variable "ec2_config_map" {
 #   type = map(object({
 #     ami_id        = string
@@ -68,10 +104,10 @@ module "my_vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   name                    = "${var.environment}-vpc"
-  cidr                    = "10.0.0.0/16"
-  azs                     = ["ap-south-1a"]
-  public_subnets          = ["10.0.0.0/24", "10.0.1.0/24"]
-  private_subnets         = ["10.0.2.0/24"]
+  cidr                    = var.cidr_range
+  azs                     = [var.availability_zone]
+  public_subnets          = [var.public_subnets.public_subnet1, var.public_subnets.public_subnet2]
+  private_subnets         = [var.private_subnets]
   enable_nat_gateway      = true
   single_nat_gateway      = true
   enable_vpn_gateway      = true
@@ -119,7 +155,7 @@ module "my_sg" {
 # key_pair.tf --------------------
 
 resource "aws_key_pair" "my_key" {
-  key_name   = "my-secret-key"
+  key_name   = var.key_name
   public_key = file("my-secret-key.pub")
 
   tags = {
@@ -152,7 +188,7 @@ resource "aws_instance" "my_server" {
   tags = {
     Environment     = var.environment
     Name            = "${var.environment}-instance-${each.key}"
-    created_by_user = "Aditya Bahuguna"
+    created_by_user = var.created_by_user
   }
 }
 
